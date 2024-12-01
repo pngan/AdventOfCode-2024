@@ -5,7 +5,7 @@ namespace AdventOfCode.Tests;
 
 public class DayTests
 {
-   // [TestCase(typeof(Day01), "74711", "209481")]
+    [TestCase(typeof(Day01), "1110981", "24869388")]
     public void Testing(Type dayType, string expectedPart1, string expectedPart2)
     {
         BaseDay? dayObj = Activator.CreateInstance(dayType) as BaseDay;
