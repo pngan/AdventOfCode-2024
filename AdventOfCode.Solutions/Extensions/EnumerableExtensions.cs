@@ -30,12 +30,16 @@ public static class EnumerableExtensions
         }
     }
 
-    public static IEnumerable<string> SkipEmptyLines(this IEnumerable<string> input) 
+    public static IEnumerable<string> SkipEmptyLines(this IEnumerable<string> input)
     {
         foreach (var element in input)
         {
             if (!string.IsNullOrWhiteSpace(element))
-            yield return element;
+                yield return element;
         }
+    }
+    public static List<List<long>> ConvertToLong(this IEnumerable<string> input)
+    {
+        return input.Select(x => x.Split(' ').Select(v => Convert.ToInt64(v)).ToList()).ToList();
     }
 }

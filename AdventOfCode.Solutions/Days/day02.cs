@@ -1,40 +1,18 @@
 ﻿using AdventOfCode.Solutions.Common;
-
-using Microsoft.CodeAnalysis;
+using AdventOfCode.Solutions.Extensions;
 
 namespace AdventOfCode.Solutions.Days;
 
-public class Day02 : BaseDay<IEnumerable<List<int>>>
+public class Day02 : BaseDay<IEnumerable<List<long>>>
 {
     protected override int DayNumber => 2;
 
-    protected override IEnumerable<List<int>> Parse(string[] input)
-    {
-        List<List<int>> result = new();
-        foreach (var item in input)
-        {
-            List<int> row = new();
-            foreach (var v in item.Split(' '))
-            {
-                row.Add(int.Parse(v));
-            }
-            result.Add(row);
-        }
-        return result;
-    }
+    protected override IEnumerable<List<long>> Parse(string[] input) => input.ConvertToLong();
 
-    bool isAscendingValid(int i, int j)
-    {
-        return (j - i) <= 3 && (j - i) > 0;
+    bool IsAscendingValid(long i, long j) => (j - i) <= 3 && (j - i) > 0;
+    bool IsDecendingValid(long i, long j) => (i - j) <= 3 && (i - j) > 0;
 
-    }
-    bool isDecendingValid(int i, int j)
-    {
-        return (i - j) <= 3 && (i - j) > 0;
-
-    }
-
-    protected override object Solve1(IEnumerable<List<int>> input)
+    protected override object Solve1(IEnumerable<List<long>> input)
     {
         int count = 0;
         foreach (var item in input)
@@ -46,37 +24,29 @@ public class Day02 : BaseDay<IEnumerable<List<int>>>
         return count;
     }
 
-    bool isValid(List<int> row)
+    bool isValid(List<long> row)
     {
-        var isAscending = false;
         if (row.Count() < 2)
             return false;
 
-        isAscending = (row[0] < row[1]);
+        bool isAscending = (row[0] < row[1]);
 
         for (int i = 0, j = 1; i < row.Count() - 1; i++, j++)
         {
-            if (isAscending)
+            if (isAscending && !IsAscendingValid(row[i], row[j]))
             {
-                if (!isAscendingValid(row[i], row[j]))
-                {
-                    return false;
-                }
+                return false;
             }
-            else
+
+            if (!isAscending && !IsDecendingValid(row[i], row[j]))
             {
-                if (!isDecendingValid(row[i], row[j]))
-                {
-                    return false;
-                }
+                return false;
             }
         }
         return true;
     }
 
-
-
-    protected override object Solve2(IEnumerable<List<int>> input)
+    protected override object Solve2(IEnumerable<List<long>> input)
     {
         int count = 0;
         foreach (var item in input)
@@ -87,8 +57,7 @@ public class Day02 : BaseDay<IEnumerable<List<int>>>
             {
                 for(int i = 0;  i < item.Count(); i++)
                 {
-                    var row = new List<int>(item);
-                    row.RemoveAt(i);
+                    var row = item.Where((x,idx) => idx != i).ToList();
                     if (isValid(row))
                     {
                         count++;
