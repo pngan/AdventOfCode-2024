@@ -16,8 +16,4 @@
       <PackageReference Include="BenchmarkDotNet" Version="0.14.0" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Inputs\" />
-    </ItemGroup>
-
 </Project>
