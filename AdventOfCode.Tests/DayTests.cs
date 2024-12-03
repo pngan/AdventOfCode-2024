@@ -7,6 +7,7 @@ public class DayTests
 {
     [TestCase(typeof(Day01), "1110981", "24869388")]
     [TestCase(typeof(Day02), "220", "296")]
+    [TestCase(typeof(Day03), "181345830", "98729041")]
     public void Testing(Type dayType, string expectedPart1, string expectedPart2)
     {
         BaseDay? dayObj = Activator.CreateInstance(dayType) as BaseDay;

@@ -3,6 +3,6 @@ using AdventOfCode.Solutions.Extensions;
 
 namespace AdventOfCode.Solutions.Days;
 
-//public class Day : BaseDay<IEnumerable<int>[]>
+//public class Day : BaseDay<IEnumerable<IEnumerable<string>>>
 //{
 //}
