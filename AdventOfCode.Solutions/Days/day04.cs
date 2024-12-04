@@ -63,21 +63,24 @@ public class Day04 : BaseDay<(Map X, Map M, Map A, Map S)>
 
     protected override object Solve2((Map X, Map M, Map A, Map S) input)
     {
+        // Considered using rotation matrices to do clockwise and counter-clockwise variations of M-S locations
+        // but decided to keep it simple and precomputed the deltas.
+
         var search = new Dictionary<MSPair, MSPair[]> ();
         search[((-1,-1), ( 1, 1))] = [((-1, 1), ( 1,-1)), (( 1,-1), (-1, 1))]; // M at top-left, S at bottom-right
         search[((-1, 1), ( 1,-1))] = [(( 1, 1), (-1,-1)), ((-1,-1), ( 1, 1))]; // M at top-right, S at bottom-left
         search[(( 1,-1), (-1, 1))] = [((-1,-1), ( 1, 1)), (( 1, 1), (-1,-1))]; // M at bottom-left, S at top-right
         search[(( 1, 1), (-1,-1))] = [(( 1,-1), (-1, 1)), ((-1, 1), ( 1,-1))]; // M at bottom-right, S at top-left
         long count = 0;
-        foreach (var a in input.A) // Foreach A
+        foreach (var a in input.A) // Visit each A
         {
-            foreach (var s in search) // Search through each possible valid configuration for M-S
+            foreach (var s in search) // Search through each possible valid configuration for M-S pair adjacent to A
             {
                 var delta = s.Key;
                 if (input.M.Contains(a.Add(delta.mdir)) && input.S.Contains(a.Add(delta.sdir)))
                 {
-                    var cwDelta = s.Value[0];
-                    var ccwDelta = s.Value[1];
+                    var cwDelta = s.Value[0];  // Clockwise rotation
+                    var ccwDelta = s.Value[1]; // Counter clockwise rotation
                     if ((input.M.Contains(a.Add(cwDelta.mdir)) && input.S.Contains(a.Add(cwDelta.sdir)))
                         || (input.M.Contains(a.Add(ccwDelta.mdir)) && input.S.Contains(a.Add(ccwDelta.sdir))))
                     {
