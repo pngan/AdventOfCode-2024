@@ -1,5 +1,6 @@
-namespace AdventOfCode.Solutions.Extensions;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
+namespace AdventOfCode.Solutions.Extensions;
 public static class EnumerableExtensions
 {
     public static List<List<T>> Split<T>(this IEnumerable<T> input, Func<T, bool> splitOn)
