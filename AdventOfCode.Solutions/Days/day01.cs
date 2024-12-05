@@ -1,4 +1,6 @@
-﻿using AdventOfCode.Solutions.Common;
+﻿using System.Collections.Immutable;
+
+using AdventOfCode.Solutions.Common;
 
 namespace AdventOfCode.Solutions.Days;
 
@@ -6,7 +8,7 @@ public class Day01 : BaseDay<(List<int> l, List<int> r)>
 {
     protected override int DayNumber => 1;
 
-    protected override (List<int>, List<int>) Parse(string[] input)
+    protected override (List<int>, List<int>) Parse(ImmutableArray<string>  input)
     {
         List<int> left = new();
         List<int> right = new();

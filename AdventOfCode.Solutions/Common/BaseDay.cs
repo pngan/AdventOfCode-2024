@@ -1,3 +1,5 @@
+using System.Collections.Immutable;
+
 using BenchmarkDotNet.Attributes;
 
 namespace AdventOfCode.Solutions.Common;
@@ -14,14 +16,13 @@ public abstract class BaseDay<TInput> : BaseDay
 
     protected abstract int DayNumber { get; }
 
-    protected abstract TInput Parse(string[] input);
+    protected abstract TInput Parse(ImmutableArray<string> input);
 
-    private string[] _input;
+    private ImmutableArray<string> _input;
 
     protected BaseDay()
     {
-        _input = File.ReadAllLines($@"Inputs\{Year}_{DayNumber:00}_input.txt")
-            .ToArray();
+        _input = [.. File.ReadAllLines($@"Inputs\{Year}_{DayNumber:00}_input.txt")];
     }
 
     [Benchmark]

@@ -1,4 +1,6 @@
-﻿using AdventOfCode.Solutions.Common;
+﻿using System.Collections.Immutable;
+
+using AdventOfCode.Solutions.Common;
 using AdventOfCode.Solutions.Extensions;
 
 namespace AdventOfCode.Solutions.Days;
@@ -9,16 +11,16 @@ public class Day04 : BaseDay<(Map X, Map M, Map A, Map S)>
 {
     protected override int DayNumber => 04;
 
-    protected override (Map X, Map M, Map A, Map S) Parse(string[] input)
+    protected override (Map X, Map M, Map A, Map S) Parse(ImmutableArray<string> input)
     {
         Map X = new();
         Map M = new();
         Map A = new();
         Map S = new();
         for (long r = 0; r < input.Length; r++)
-            for (long c = 0; c < input[r].Length; c++)
+            for (long c = 0; c < input[(int)r].Length; c++)
             {
-                char ch = input[r][(int)c];
+                char ch = input[(int)r][(int)c];
                 switch (ch)
                 {
                     case 'X': X.Add((r, c)); break;

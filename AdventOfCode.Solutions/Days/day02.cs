@@ -1,4 +1,6 @@
-﻿using AdventOfCode.Solutions.Common;
+﻿using System.Collections.Immutable;
+
+using AdventOfCode.Solutions.Common;
 using AdventOfCode.Solutions.Extensions;
 
 namespace AdventOfCode.Solutions.Days;
@@ -7,7 +9,7 @@ public class Day02 : BaseDay<IEnumerable<List<long>>>
 {
     protected override int DayNumber => 2;
 
-    protected override IEnumerable<List<long>> Parse(string[] input) => input.ConvertToLong();
+    protected override IEnumerable<List<long>> Parse(ImmutableArray<string> input) => input.ConvertToLong();
 
     bool IsAscendingValid(long i, long j) => (j - i) <= 3 && (j - i) > 0;
     bool IsDecendingValid(long i, long j) => (i - j) <= 3 && (i - j) > 0;

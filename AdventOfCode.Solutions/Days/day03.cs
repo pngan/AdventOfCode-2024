@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Collections.Immutable;
+using System.Text.RegularExpressions;
 using AdventOfCode.Solutions.Common;
 
 namespace AdventOfCode.Solutions.Days;
@@ -7,7 +8,7 @@ public class Day03 : BaseDay<string>
 {
     protected override int DayNumber => 3;
 
-    protected override string Parse(string[] input) => string.Join("", input);
+    protected override string Parse(ImmutableArray<string> input) => string.Join("", input);
 
     protected override object Solve1(string input)
     {
