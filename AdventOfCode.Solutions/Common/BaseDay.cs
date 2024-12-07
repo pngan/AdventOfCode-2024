@@ -22,7 +22,15 @@ public abstract class BaseDay<TInput> : BaseDay
 
     protected BaseDay()
     {
-        _input = [.. File.ReadAllLines($@"Inputs\{Year}_{DayNumber:00}_input.txt")];
+        List<string> lines = [.. File.ReadAllLines($@"Inputs\{Year}_{DayNumber:00}_input.txt")];
+        while (true)
+        {
+            if (string.IsNullOrWhiteSpace(lines.Last()))
+                lines.RemoveAt(lines.Count() - 1);
+            else
+                break;
+        }
+        _input = lines.ToImmutableArray();
     }
 
     [Benchmark]
