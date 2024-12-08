@@ -43,4 +43,25 @@ public static class EnumerableExtensions
     {
         return input.Select(x => x.Split(' ').Select(v => Convert.ToInt64(v)).ToList()).ToList();
     }
+
+
+    // Operate on every distinct pairing of two enumerables, which must be of same length
+    public static IEnumerable<TResult> DistinctPairs<T1, T2, TResult>(
+        this IEnumerable<T1> first,
+        IEnumerable<T2> second,
+        Func<T1, T2, TResult> resultSelector)
+    {
+        var firstArray = first.ToArray();
+        var secondArray = second.ToArray();
+        if (firstArray.Length != secondArray.Length)
+            throw new ArgumentException("Input arrays are of different lengths.");
+
+        for (int x = 0; x < firstArray.Length; x++)
+        {
+            for (int y = x+1; y < secondArray.Length; y++)
+            {
+                yield return resultSelector(firstArray[x], secondArray[y]);
+            }
+        }
+    }
 }

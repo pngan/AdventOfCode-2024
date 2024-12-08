@@ -1,6 +1,6 @@
 ﻿using AdventOfCode.Solutions.Days;
 
-var day = new Day07();
+var day = new Day08();
 Console.WriteLine(day.Solve1());
 Console.WriteLine(day.Solve2());
 
