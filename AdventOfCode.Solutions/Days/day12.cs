@@ -7,6 +7,8 @@ using AdventOfCode.Solutions.Extensions;
 
 namespace AdventOfCode.Solutions.Days;
 
+using static System.Net.Mime.MediaTypeNames;
+
 using Point = (int r, int c);
 public class Day12 : BaseDay<(Dictionary<Point, char> image, int rows, int cols)>
 {
@@ -35,7 +37,6 @@ public class Day12 : BaseDay<(Dictionary<Point, char> image, int rows, int cols)
     {
         int nextLabel = 0;
         int currLabel = 0;
-        char currPixel = '\0';
 
         Dictionary<Point, int> label = new();
         HashSet<(int, int)> equivalence = new();
@@ -44,8 +45,8 @@ public class Day12 : BaseDay<(Dictionary<Point, char> image, int rows, int cols)
 
         for (int r = 0; r < input.rows; r++)
         {
-            currPixel = '\0';
-            for (int c = 0; r < input.cols; c++)
+            char currPixel = '\0';
+            for (int c = 0; c < input.cols; c++)
             {
                 Point p = (r, c);
                 if (input.image[p]!=currPixel)
@@ -61,23 +62,47 @@ public class Day12 : BaseDay<(Dictionary<Point, char> image, int rows, int cols)
                 label[p]=currLabel;
 
                 // Update equivalence
-                if (label.TryGetValue((p.r-1, p.c), out int adjacentLabel) && adjacentLabel == currLabel)
+                var aboveLocation = (p.r - 1, p.c);
+                if (input.image.TryGetValue(aboveLocation, out char abovePixel) && currPixel == abovePixel)
                 {
-                    equivalence.Add((currLabel, adjacentLabel));
+                    equivalence.Add((currLabel, label[aboveLocation]));
                 }
 
                 // Increment Area
                 area[currLabel]++;
 
                 // Increment Sides
-                side[currLabel] += NonMatchingNeighbours();
+                side[currLabel] += NonMatchingNeighbours(input.image, p);
             }
         }
 
         return -123;
 
-        int NonMatchingNeighbours() {  }
     }
+
+    int NonMatchingNeighbours(Dictionary<Point, char> image, Point currPoint)
+    {
+        int nonMatchingNeighbours = 0;
+        char currPixel = image[currPoint];
+        // Up
+        var neighbour = (currPoint.r - 1, currPoint.c);
+        if (!image.ContainsKey(neighbour) || image[neighbour] != currPixel) nonMatchingNeighbours++;
+
+        // Down
+        neighbour = (currPoint.r+1, currPoint.c);
+        if (!image.ContainsKey(neighbour) || image[neighbour] != currPixel) nonMatchingNeighbours++;
+
+        // Left
+        neighbour = (currPoint.r, currPoint.c-1);
+        if (!image.ContainsKey(neighbour) || image[neighbour] != currPixel) nonMatchingNeighbours++;
+
+        //Right
+        neighbour = (currPoint.r, currPoint.c+1);
+        if (!image.ContainsKey(neighbour) || image[neighbour] != currPixel) nonMatchingNeighbours++;
+
+        return nonMatchingNeighbours;
+    }
+
 
 
     protected override object Solve2((Dictionary<Point, char> image, int rows, int cols) input)
