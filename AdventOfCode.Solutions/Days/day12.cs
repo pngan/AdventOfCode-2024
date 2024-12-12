@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using System.Data;
 using System.Numerics;
 
 using AdventOfCode.Solutions.Common;
@@ -6,63 +7,80 @@ using AdventOfCode.Solutions.Extensions;
 
 namespace AdventOfCode.Solutions.Days;
 
-public class Day12 : BaseDay<ImmutableArray<string>>
+using Point = (int r, int c);
+public class Day12 : BaseDay<(Dictionary<Point, char> image, int rows, int cols)>
 {
     protected override int DayNumber => 12;
-    int ROWS;
-    int COLS;
 
-    protected override ImmutableArray<string> Parse(ImmutableArray<string> input)
+    protected override (Dictionary<Point, char> image, int rows, int cols) Parse(ImmutableArray<string> input)
     {
-        ROWS = input.Length;
-        COLS = input.First().Length;
-        return input;
+        Dictionary<Point, char> result = new();
+        int r = 0;
+        int c = 0;
+
+        foreach (var row in input)
+        {
+            c = 0;
+            foreach (var ch in row)
+            {
+                result[(r, c)] = ch;
+                c++;
+            }
+            r++;
+        }
+        return (result,r,c);
     }
 
-    protected override object Solve1(ImmutableArray<string> input)
+    protected override object Solve1((Dictionary<Point, char> image, int rows, int cols) input)
     {
-        List<List<bool>> visited = new();
-        for (int r = 0; r < ROWS; r++)
-        {
-            visited.Add(Enumerable.Repeat(false, COLS).ToList());
-        }
+        int nextLabel = 0;
+        int currLabel = 0;
+        char currPixel = '\0';
 
-        List<List<uint>> edgeCount = new();
-        for (int r = 0; r < ROWS; r++)
-        {
-            edgeCount.Add(Enumerable.Repeat(0u, COLS).ToList());
-        }
+        Dictionary<Point, int> label = new();
+        HashSet<(int, int)> equivalence = new();
+        List<int> area = new();
+        List<int> side = new();
 
-        for (int r = 0; r < ROWS; r++)
+        for (int r = 0; r < input.rows; r++)
         {
-            for (int c = 0; c < COLS; c++)
+            currPixel = '\0';
+            for (int c = 0; r < input.cols; c++)
             {
-                uint edges = 0;
-                var value = input[r][c];
+                Point p = (r, c);
+                if (input.image[p]!=currPixel)
+                {
+                    currPixel = input.image[(r,c)];
+                    currLabel = nextLabel;
+                    area.Add(0);
+                    side.Add(0);
+                    nextLabel++;
+                }
 
-                var p = N(r, c);
-                if (p.r < 0 || input[p.r][p.c] != value) edges++;
-                p = S(r, c);
-                if (p.r >= ROWS) edges++;
-                if (input[p.r][p.c] != value) edges++;
-                p = W(r, c);
-                if (p.c < 0 || input[p.r][p.c] != value) edges++;
-                p = E(r, c);
-                if (p.c >= COLS || input[p.r][p.c] != value) edges++;
+                // Update Label
+                label[p]=currLabel;
 
-                edgeCount[r][c] = edges;
+                // Update equivalence
+                if (label.TryGetValue((p.r-1, p.c), out int adjacentLabel) && adjacentLabel == currLabel)
+                {
+                    equivalence.Add((currLabel, adjacentLabel));
+                }
+
+                // Increment Area
+                area[currLabel]++;
+
+                // Increment Sides
+                side[currLabel] += NonMatchingNeighbours();
             }
         }
 
-        (int r, int c) N(int r, int c) => (r - 1, c);
-        (int r, int c) S(int r, int c) => (r + 1, c);
-        (int r, int c) W(int r, int c) => (r, c-1);
-        (int r, int c) E(int r, int c) => (r, c+1);
+        return -123;
 
-        return 0;
+        int NonMatchingNeighbours() {  }
     }
 
-    protected override object Solve2(ImmutableArray<string> input)
+
+    protected override object Solve2((Dictionary<Point, char> image, int rows, int cols) input)
     {
         throw new NotImplementedException();
     }
