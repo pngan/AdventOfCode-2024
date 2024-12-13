@@ -1,6 +1,7 @@
 ﻿using System.Collections.Immutable;
 using System.Data;
 using System.Numerics;
+using System.Runtime.ExceptionServices;
 
 using AdventOfCode.Solutions.Common;
 using AdventOfCode.Solutions.Extensions;
@@ -10,6 +11,7 @@ namespace AdventOfCode.Solutions.Days;
 using static System.Net.Mime.MediaTypeNames;
 
 using Point = (int r, int c);
+using Equivalence = (int to, int from);
 public class Day12 : BaseDay<(Dictionary<Point, char> image, int rows, int cols)>
 {
     protected override int DayNumber => 12;
@@ -39,9 +41,10 @@ public class Day12 : BaseDay<(Dictionary<Point, char> image, int rows, int cols)
         int currLabel = 0;
 
         Dictionary<Point, int> label = new();
-        HashSet<(int, int)> equivalence = new();
+        List<HashSet<int>> equivalence = new();
         List<int> area = new();
         List<int> side = new();
+        List<char> value = new();
 
         for (int r = 0; r < input.rows; r++)
         {
@@ -51,10 +54,11 @@ public class Day12 : BaseDay<(Dictionary<Point, char> image, int rows, int cols)
                 Point p = (r, c);
                 if (input.image[p]!=currPixel)
                 {
-                    currPixel = input.image[(r,c)];
+                    currPixel = input.image[p];
                     currLabel = nextLabel;
                     area.Add(0);
                     side.Add(0);
+                    value.Add('\0');
                     nextLabel++;
                 }
 
@@ -65,7 +69,24 @@ public class Day12 : BaseDay<(Dictionary<Point, char> image, int rows, int cols)
                 var aboveLocation = (p.r - 1, p.c);
                 if (input.image.TryGetValue(aboveLocation, out char abovePixel) && currPixel == abovePixel)
                 {
-                    equivalence.Add((currLabel, label[aboveLocation]));
+                    var hss = equivalence.Where(hs => hs.Contains(label[aboveLocation]));
+                    if (hss == null)
+                        throw new ApplicationException("Did not find equivalence");
+                    var firstEquivalenceSet = hss.First();
+                    firstEquivalenceSet.Add(currLabel);
+
+                    var otherEquivalenceSets = hss.Skip(1).ToList();
+                    foreach (var hs in otherEquivalenceSets)
+                    {
+                        firstEquivalenceSet.UnionWith(hs);
+                    }
+
+                    var removed = equivalence.Except(otherEquivalenceSets).ToList();
+                    equivalence = removed;
+                }
+                else
+                {
+                    equivalence.Add([currLabel]);
                 }
 
                 // Increment Area
@@ -76,8 +97,28 @@ public class Day12 : BaseDay<(Dictionary<Point, char> image, int rows, int cols)
             }
         }
 
-        return -123;
+        // Resolve the equivalences
+        foreach (var hs in equivalence)
+        {
+            var equivs = hs.ToList();
+            var root = equivs[0];
+            for (int i = 1; i < equivs.Count; i++)
+            {
+                area[root] += area[i];
+                side[root] += side[i];
+                area[i] = 0;
+                side[i] = 0;
+            }
+        }
 
+        // Calculate Cost
+        int cost = 0;
+        for (int i = 0; i < area.Count; i++)
+        {
+            cost += area[i] * side[i];
+        }
+
+        return cost;
     }
 
     int NonMatchingNeighbours(Dictionary<Point, char> image, Point currPoint)
