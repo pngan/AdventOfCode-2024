@@ -1,3 +1,6 @@
+using System.Collections.Immutable;
+using System.Text.RegularExpressions;
+
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace AdventOfCode.Solutions.Extensions;
@@ -62,6 +65,16 @@ public static class EnumerableExtensions
             {
                 yield return resultSelector(firstArray[x], secondArray[y]);
             }
+        }
+    }
+
+    public static IEnumerable<int[]> GetIntsFromLine(this IEnumerable<string> input, string regexPattern)
+    {
+        foreach (var line in input)
+        {
+            Regex rg = new(regexPattern);
+            var matched = rg.Match(line);
+            yield return matched.Groups.Values.Skip(1).Select(v => Convert.ToInt32(v.Value)).ToArray();
         }
     }
 }
