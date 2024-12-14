@@ -15,6 +15,7 @@ public class DayTests
     [TestCase(typeof(Day08), "247", "861")]
     [TestCase(typeof(Day09), "6384282079460", "6408966547049")]
     [TestCase(typeof(Day11), "203228", "240884656550923")]
+    [TestCase(typeof(Day12), "1363484", "")]
     [TestCase(typeof(Day13), "29023", "96787395375634")]
     public void Testing(Type dayType, string expectedPart1, string expectedPart2)
     {
