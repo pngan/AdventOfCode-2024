@@ -1,10 +1,8 @@
-﻿using System.ComponentModel;
-
-namespace AdventureOfCode.Utilities.Image;
+﻿namespace AdventureOfCode.Utilities.Image;
 
 public class Image2<T>
 {
-    private readonly Dictionary<Point2, T> _image = [];
+    private readonly Dictionary<(int r, int c), T> _image = [];
     public int ROWS { get; init; } 
     public int COLS { get; init; }
 
@@ -14,7 +12,7 @@ public class Image2<T>
         COLS = cols;
     }
 
-    public T this[Point2 p]
+    public T this[(int r, int c ) p]
     {
         get {
             if (!InBounds(p))
@@ -28,16 +26,17 @@ public class Image2<T>
         }
     }
 
-    public bool InBounds(Point2 p) => p.r >= 0 && p.c >= 0 && p.r < ROWS && p.c < COLS;
+    public bool InBounds((int r, int c ) p) => p.r >= 0 && p.c >= 0 && p.r < ROWS && p.c < COLS;
 
-    // Returns only neighbours in bouds
-    public IEnumerable<Point2> Neighbours8(Point2 p) => p.Neighbours8().Where(InBounds);
-    public IEnumerable<Point2> Neighbours4(Point2 p) => p.Neighbours4().Where(InBounds);
-    public IEnumerable<Point2> EveryPoint() => _image.Keys;
 
-    public bool Exists(Point2 p) => _image.ContainsKey(p);
+    // Returns only neighbours in bounds
+    public IEnumerable<(int r, int c )> Neighbours8((int r, int c ) p) => p.Neighbours8().Where(InBounds);
+    public IEnumerable<(int r, int c )> Neighbours4((int r, int c ) p) => p.Neighbours4().Where(InBounds);
+    public IEnumerable<(int r, int c )> EveryPoint() => _image.Keys;
 
-    public bool TryGetValue(Point2 p, out T value)
+    public bool Exists((int r, int c ) p) => _image.ContainsKey(p);
+
+    public bool TryGetValue((int r, int c ) p, out T value)
     {
         value = default;
         if (!Exists(p)) return false;

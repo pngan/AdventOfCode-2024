@@ -2,53 +2,38 @@
 
 using AdventOfCode.Solutions.Common;
 
+using AdventureOfCode.Utilities.Image;
+
 namespace AdventOfCode.Solutions.Days;
 
 using Point = (int r, int c);
 
-public class Day12 : BaseDay<(Dictionary<Point, char> image, int rows, int cols)>
+public class Day12 : BaseDay<CharImage2>
 {
     protected override int DayNumber => 12;
     const int Unvisited = -1;
 
-    protected override (Dictionary<Point, char> image, int rows, int cols) Parse(ImmutableArray<string> input)
+    protected override CharImage2 Parse(ImmutableArray<string> input) => CharImage2.Parse(input);
+
+    protected override object Solve1(CharImage2 input) => ProcessImage(input, CountPixelEdges);
+
+    protected override object Solve2(CharImage2 input) => ProcessImage(input, CountPixelSides);
+
+    private object ProcessImage(CharImage2 input, Func<Image2<int>, Point, ulong> CalcEdgesOrSides)
     {
-        Dictionary<Point, char> result = new();
-        int r = 0;
-        int c = 0;
-
-        foreach (var row in input)
-        {
-            c = 0;
-            foreach (var ch in row)
-            {
-                result[(r, c)] = ch;
-                c++;
-            }
-            r++;
-        }
-        return (result,r,c);
-    }
-
-    protected override object Solve1((Dictionary<Point, char> image, int rows, int cols) input) => ProcessImage(input, CountPixelEdges);
-
-    protected override object Solve2((Dictionary<Point, char> image, int rows, int cols) input) => ProcessImage(input, CountPixelSides);
-
-    private object ProcessImage((Dictionary<Point, char> image, int rows, int cols) input, Func<Dictionary<Point, int>, Point, ulong> CalcEdgesOrSides)
-    {
-        Dictionary<Point, int> labels = new();
+        Image2<int> labels = new(input.ROWS, input.COLS);
         List<int> areas = new(); // idx=label, area count
         List<ulong> sides = new(); // idx=label, sides count
-        foreach (Point pt in input.image.Keys)
+        foreach (Point pt in input.EveryPoint())
         {
             labels[pt] = -1;
         }
 
         int label = -1;
         Queue<Point> queue = new();
-        for (int r = 0; r < input.rows; r++)
+        for (int r = 0; r < input.ROWS; r++)
         {
-            for (int c = 0; c < input.cols; c++)
+            for (int c = 0; c < input.COLS; c++)
             {
                 Point p = (r, c);
                 if (labels[p] == Unvisited)
@@ -62,7 +47,7 @@ public class Day12 : BaseDay<(Dictionary<Point, char> image, int rows, int cols)
                     while (queue.Any())
                     {
                         p = queue.Dequeue();
-                        var neighbours = MatchingNonVisitedNeighbours(input.image, labels, p).ToList();
+                        var neighbours = MatchingNonVisitedNeighbours(input, labels, p).ToList();
                         foreach (var neighbour in neighbours)
                         {
                             queue.Enqueue(neighbour);
@@ -76,9 +61,9 @@ public class Day12 : BaseDay<(Dictionary<Point, char> image, int rows, int cols)
             }
         }
 
-        for (int r = 0; r < input.rows; r++)
+        for (int r = 0; r < input.ROWS; r++)
         {
-            for (int c = 0; c < input.cols; c++)
+            for (int c = 0; c < input.COLS; c++)
             {
                 ulong n = CalcEdgesOrSides(labels, (r, c));
                 sides[labels[(r, c)]] += n;
@@ -94,52 +79,52 @@ public class Day12 : BaseDay<(Dictionary<Point, char> image, int rows, int cols)
         }
         return cost;
 
-        static IEnumerable<Point> MatchingNonVisitedNeighbours(Dictionary<Point, char> image, Dictionary<Point, int> labels, Point p)
+        static IEnumerable<Point> MatchingNonVisitedNeighbours(CharImage2 image, Image2<int> labels, Point p)
         {
             var pixel = image[p];
 
             // Up
             var neighbour = (p.r - 1, p.c);
-            if (image.ContainsKey(neighbour) && image[neighbour] == pixel && labels[neighbour] == Unvisited) yield return neighbour;
+            if (image.Exists(neighbour) && image[neighbour] == pixel && labels[neighbour] == Unvisited) yield return neighbour;
 
             // Down
             neighbour = (p.r + 1, p.c);
-            if (image.ContainsKey(neighbour) && image[neighbour] == pixel && labels[neighbour] == Unvisited) yield return neighbour;
+            if (image.Exists(neighbour) && image[neighbour] == pixel && labels[neighbour] == Unvisited) yield return neighbour;
 
             // Left
             neighbour = (p.r, p.c - 1);
-            if (image.ContainsKey(neighbour) && image[neighbour] == pixel && labels[neighbour] == Unvisited) yield return neighbour;
+            if (image.Exists(neighbour) && image[neighbour] == pixel && labels[neighbour] == Unvisited) yield return neighbour;
 
             //Right
             neighbour = (p.r, p.c + 1);
-            if (image.ContainsKey(neighbour) && image[neighbour] == pixel && labels[neighbour] == Unvisited) yield return neighbour;
+            if (image.Exists(neighbour) && image[neighbour] == pixel && labels[neighbour] == Unvisited) yield return neighbour;
         }
     }
 
-    static ulong CountPixelEdges(Dictionary<Point, int> labels, Point currPoint)
+    static ulong CountPixelEdges(Image2<int> labels, Point currPoint)
     {
         ulong edgeCount = 0;
         int label = labels[currPoint];
         // Up
         var neighbour = (currPoint.r - 1, currPoint.c);
-        if (!labels.ContainsKey(neighbour) || labels[neighbour] != label) edgeCount++;
+        if (!labels.Exists(neighbour) || labels[neighbour] != label) edgeCount++;
 
         // Down
         neighbour = (currPoint.r + 1, currPoint.c);
-        if (!labels.ContainsKey(neighbour) || labels[neighbour] != label) edgeCount++;
+        if (!labels.Exists(neighbour) || labels[neighbour] != label) edgeCount++;
 
         // Left
         neighbour = (currPoint.r, currPoint.c - 1);
-        if (!labels.ContainsKey(neighbour) || labels[neighbour] != label) edgeCount++;
+        if (!labels.Exists(neighbour) || labels[neighbour] != label) edgeCount++;
 
         //Right
         neighbour = (currPoint.r, currPoint.c + 1);
-        if (!labels.ContainsKey(neighbour) || labels[neighbour] != label) edgeCount++;
+        if (!labels.Exists(neighbour) || labels[neighbour] != label) edgeCount++;
 
         return edgeCount;
     }
 
-    ulong CountPixelSides(Dictionary<Point, int> labels, Point p)
+    ulong CountPixelSides(Image2<int> labels, Point p)
     {
         ulong sideCount = 0;
 
@@ -173,7 +158,7 @@ public class Day12 : BaseDay<(Dictionary<Point, char> image, int rows, int cols)
         {
             int l = labels[p];
             Point pp = (p.r + step.dr, p.c + step.dc);
-            if (!labels.ContainsKey(pp)) return false;
+            if (!labels.Exists(pp)) return false;
             return labels[pp] == l;
         }
 
@@ -181,7 +166,7 @@ public class Day12 : BaseDay<(Dictionary<Point, char> image, int rows, int cols)
         {
             int l = labels[p];
             Point pp = (p.r + step.dr, p.c + step.dc);
-            if (!labels.ContainsKey(pp)) return true;
+            if (!labels.Exists(pp)) return true;
             return labels[pp] != l;
         }
     }
