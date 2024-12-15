@@ -5,6 +5,7 @@ using AdventOfCode.Solutions.Common;
 namespace AdventOfCode.Solutions.Days;
 
 using Point = (int r, int c);
+
 public class Day12 : BaseDay<(Dictionary<Point, char> image, int rows, int cols)>
 {
     protected override int DayNumber => 12;
@@ -29,16 +30,9 @@ public class Day12 : BaseDay<(Dictionary<Point, char> image, int rows, int cols)
         return (result,r,c);
     }
 
-    protected override object Solve1((Dictionary<Point, char> image, int rows, int cols) input)
-    {
-        return ProcessImage(input, CountPixelEdges);
-    }
+    protected override object Solve1((Dictionary<Point, char> image, int rows, int cols) input) => ProcessImage(input, CountPixelEdges);
 
-    protected override object Solve2((Dictionary<Point, char> image, int rows, int cols) input)
-    {
-        Console.WriteLine("----------------------");
-        return ProcessImage(input, CountPixelSides);
-    }
+    protected override object Solve2((Dictionary<Point, char> image, int rows, int cols) input) => ProcessImage(input, CountPixelSides);
 
     private object ProcessImage((Dictionary<Point, char> image, int rows, int cols) input, Func<Dictionary<Point, int>, Point, ulong> CalcEdgesOrSides)
     {
@@ -87,18 +81,8 @@ public class Day12 : BaseDay<(Dictionary<Point, char> image, int rows, int cols)
             for (int c = 0; c < input.cols; c++)
             {
                 ulong n = CalcEdgesOrSides(labels, (r, c));
-
-                //Console.Write($"{input.image[(r, c)]}, ({r},{c}), {labels[(r, c)]}, ");
-                //Console.WriteLine($"Sides = {CalcEdgesOrSides(labels, (r, c))}");
-                //if (input.image[(r, c)] != 'A')
-                //    Console.Write('.');
-                //else
-                  // Console.Write(n);
-
-
                 sides[labels[(r, c)]] += n;
             }
-            //Console.WriteLine();
         }
 
 
@@ -106,7 +90,6 @@ public class Day12 : BaseDay<(Dictionary<Point, char> image, int rows, int cols)
         ulong cost = 0;
         for (int l = 0; l <= label; l++)
         {
-           // Console.WriteLine($"{(ulong)areas[l]}, {sides[l]}");
             cost += (ulong)areas[l] * sides[l];
         }
         return cost;
@@ -159,68 +142,22 @@ public class Day12 : BaseDay<(Dictionary<Point, char> image, int rows, int cols)
     ulong CountPixelSides(Dictionary<Point, int> labels, Point p)
     {
         ulong sideCount = 0;
-        int label = labels[p];
 
-        ulong edges = CountPixelEdges(labels, p);
+        if (MatchesE() && NotMatchesSE() && MatchesS()) sideCount++;// Inner corner se
+        if (MatchesW() && MatchesS() && NotMatchesSW()) sideCount++;// Inner corner sw
+        if (MatchesN() && NotMatchesNE() && MatchesE()) sideCount++;// Inner corner ne
+        if (NotMatchesNW() && MatchesN() && MatchesW()) sideCount++;// Inner corner nw
 
-        // If pixel has 4 edges, then it is a single isolated pixel and it represents 4 sides
-        if (edges == 4) return  4;
-
-        // If pixel has 3 edges then it represents and end of a one pixel thick spur, and it represents 2 sides
-        if (edges == 3) return 2;
-
-        // Check for the 8 corner cases, each of which represents 1 side
-        if (
-            MatchesW() && NotMatchesSW() && MatchesS()  // Inner corner se
-            )
-            sideCount++;
-        if (
-                   MatchesE() && MatchesS() && NotMatchesSE()  // Inner corner sw
-                   )
-            sideCount++;
-        if (
-                   MatchesN() && NotMatchesNE() && MatchesE()  // Inner corner ne
-                   )
-            sideCount++;
-        if (
-                   NotMatchesNW() && MatchesN() && MatchesW()    // Inner corner nw
-                   )
-            sideCount++;
-
-        if (
-            NotMatchesNW() && NotMatchesN() && NotMatchesW() // Outer corner se
-            )
-            sideCount++;
-        if (
-            NotMatchesN() && NotMatchesNE() && NotMatchesE() // Outer corner sw
-            )
-            sideCount++;
-        if (
-            NotMatchesW() && NotMatchesSW() && NotMatchesS() // Outer corner ne
-            )
-            sideCount++;
-        if (
-            NotMatchesE() && NotMatchesS() && NotMatchesSE() // Outer corner nw
-            )
-            sideCount++;
-
-
-        if (
-            NotMatchesE() && NotMatchesS() && MatchesSE() // Outer corner special case
-            )
-            sideCount++;
-        if (
-            MatchesNW() && NotMatchesN() && NotMatchesW() // Outer corner special case
-            )
-            sideCount++;
+        if (NotMatchesS() && NotMatchesE()) sideCount++; // Outer corner se
+        if (NotMatchesW() && NotMatchesS()) sideCount++; // Outer corner sw
+        if (NotMatchesN() && NotMatchesE()) sideCount++; // Outer corner ne
+        if (NotMatchesN() && NotMatchesW()) sideCount++; // Outer corner nw
 
         return sideCount;
 
         bool MatchesN() => Matches((-1, 0));
-        bool MatchesNW() => Matches((-1, -1));
         bool MatchesS() => Matches((1, 0));
         bool MatchesE() => Matches((0, 1));
-        bool MatchesSE() => Matches((1, 1));
         bool MatchesW() => Matches((0, -1));
 
         bool NotMatchesW() => NotMatches((0, -1));
