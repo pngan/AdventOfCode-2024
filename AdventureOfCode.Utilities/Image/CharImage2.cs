@@ -6,10 +6,21 @@ public class CharImage2 : Image2<char>
 {
     public CharImage2(int rows, int cols) : base(rows, cols) { }
 
-    public static CharImage2 Parse(ImmutableArray<string> input)
+    public CharImage2(CharImage2 old) : this(old.ROWS, old.COLS)
     {
-        int rows = input.Length;
-        int cols = input[0].Length;
+        for (int r = 0; r < ROWS; r++)
+        {
+            for (int c = 0; c < COLS; c++)
+            {
+                this[(r, c)] = old[(r,c)];
+            }
+        }
+    }
+
+    public static CharImage2 Parse(IEnumerable<string> input)
+    {
+        int rows = input.Count();
+        int cols = input.First().Length;
         CharImage2 result = new(rows,cols);
 
         int r = 0;
@@ -24,5 +35,17 @@ public class CharImage2 : Image2<char>
             r++;
         }
         return (CharImage2) result;
+    }
+
+    public void DrawMap()
+    {
+        for (int r = 0; r < ROWS; r++)
+        {
+            for (int c = 0; c < COLS; c++)
+            {
+                Console.Write(this[(r, c)]);
+            }
+            Console.WriteLine();
+        }
     }
 }

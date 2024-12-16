@@ -1,6 +1,8 @@
-﻿namespace AdventureOfCode.Utilities.Image;
+﻿using System.Numerics;
 
-public class Image2<T>
+namespace AdventureOfCode.Utilities.Image;
+
+public class Image2<T> where T : INumber<T>
 {
     private readonly Dictionary<(int r, int c), T> _image = [];
     public int ROWS { get; init; } 
@@ -43,4 +45,6 @@ public class Image2<T>
         value = _image[p];
         return true;
     }
+
+    public IEnumerable<(int r, int c)> Find(T value) => _image.Where(kvp => kvp.Value.Equals(value)).Select(kvp => kvp.Key);
 }
