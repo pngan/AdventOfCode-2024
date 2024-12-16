@@ -6,7 +6,7 @@ using BenchmarkDotNet.Diagnosers;
 using BenchmarkDotNet.Running;
 
 
-BenchmarkRunner.Run<Day15>(
+BenchmarkRunner.Run<Day16>(
         ManualConfig
             .Create(DefaultConfig.Instance)
             .AddDiagnoser(MemoryDiagnoser.Default));
