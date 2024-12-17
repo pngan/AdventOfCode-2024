@@ -26,7 +26,7 @@ public class Day16 : BaseDay<(CharImage2 map, Point start, Point end)>
         Dictionary<(Point, (int dr, int dc), Point, (int dr, int dc)), ulong> costs = new();
         var pq = new PriorityQueue<(Point, (int,int), Point, (int,int)), ulong>();
         pq.Enqueue((input.start, Step.E, input.start, Step.E), 0);
-        Dictionary<(Point, (int dr, int dc)), ((int dr, int dc), Point)> path = new(); // <Point, Previous Point>
+        Dictionary<(Point p, (int dr, int dc) s), (Point p, (int dr, int dc) s)> visited = new(); // <Point, Previous Point>
 
         while (true)
         {
@@ -34,24 +34,25 @@ public class Day16 : BaseDay<(CharImage2 map, Point start, Point end)>
             if (!pq.TryDequeue(out (Point p, (int dr, int dc) s, Point prevPoint, (int dr, int dc) prevStep) curr, out ulong cost) )
                 break;
 
-            // Ignore if the inspected node has its cost already determined
-            if (costs.ContainsKey(curr))
+            // Ignore if the inspected node has already been visited
+            if (visited.ContainsKey((curr.p, curr.s)))
                 continue;
 
             // Handle minimum item from priority queue
             costs[curr] = cost;
-            path[(curr.prevPoint, curr.prevStep)] = (curr.p, curr.s);
+            visited[(curr.p, curr.s)] = (curr.prevPoint, curr.prevStep);
 
+            HashSet<Point> uniqueLocations = new();
             if (curr.p == input.end)
             {
-
-                var next = path[(input.start, Step.E)];
-                while(next.Item1 != input.end)
+                var prev = visited[(curr.p, curr.s)];
+                uniqueLocations.Add(curr.p);
+                while (prev != (input.start, Step.E))
                 {
-                    next = path[(next)];
+                    uniqueLocations.Add((prev.p));
+                    prev = visited[(prev)];
                 }
-
-
+                Console.WriteLine(uniqueLocations.Count-1);
                 return cost;
             }
             // Next possible actions according to puzzle:
