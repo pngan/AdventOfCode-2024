@@ -27,7 +27,7 @@ public class Day16 : BaseDay<(CharImage2 map, Point start, Point end)>
         Dictionary<(State, State), ulong> costs = new();
         var pq = new PriorityQueue<(State curr, State prev), ulong>();
         pq.Enqueue(((input.start, Step.E), (input.start, Step.E)), 0);
-        Dictionary<State, State> visited = new(); // <Point, Previous Point>
+        Dictionary<State, HashSet<State>> visited = new(); // <Point, Previous Point>
 
         while (true)
         {
@@ -41,18 +41,25 @@ public class Day16 : BaseDay<(CharImage2 map, Point start, Point end)>
 
             // Handle minimum item from priority queue
             costs[best] = cost;
-            visited[best.curr] = best.prev;
+            visited[best.curr] = [best.prev];
 
-            HashSet<Point> uniqueLocations = new();
             if (best.curr.p == input.end)
             {
-                var prev = visited[best.curr];
-                uniqueLocations.Add(best.prev.p);
-                while (prev != (input.start, Step.E))
+                HashSet<Point> uniqueLocations = [];
+                Queue<State> queue = new();
+                queue.Enqueue(best.curr);
+
+                while (queue.Any())
                 {
-                    uniqueLocations.Add((prev.p));
-                    prev = visited[(prev)];
+                    var state = queue.Dequeue();
+                    uniqueLocations.Add(state.p);
+                    foreach (var prevState in visited[state])
+                    {
+                        if (prevState != state)    // Skipp first visited point where the value and prev are equal
+                            queue.Enqueue(prevState);
+                    }
                 }
+
                 Console.WriteLine(uniqueLocations.Count);
                 return cost;
             }
