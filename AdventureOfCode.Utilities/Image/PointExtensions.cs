@@ -34,8 +34,8 @@ public static class PointExtensions
             ];
     }
 
-    public static (int r, int c) Add(this (int r, int c) p, (int r, int c) s) => (r: p.r + s.r, c: p.c + s.c);
-    public static (int r, int c) Subtract(this (int r, int c) p, (int r, int c) s) => (r: p.r - s.r, c: p.c - s.c);
+    public static (int r, int c) Add(this (int r, int c) p, (int dr, int dc) s) => (r: p.r + s.dr, c: p.c + s.dc);
+    public static (int r, int c) Subtract(this (int r, int c) p, (int dr, int dc) s) => (r: p.r - s.dr, c: p.c - s.dc);
     public static (int r, int c) Negate(this (int r, int c) p) => (r: -p.r, c: -p.c);
     public static (int r, int c) StepNW(this (int r, int c) p) => p.Add(Step.NW);
     public static (int r, int c) StepN(this (int r, int c) p) => p.Add(Step.N);
@@ -45,19 +45,24 @@ public static class PointExtensions
     public static (int r, int c) StepS(this (int r, int c) p) => p.Add(Step.S);
     public static (int r, int c) StepSW(this (int r, int c) p) => p.Add(Step.SW);
     public static (int r, int c) StepW(this (int r, int c) p) => p.Add(Step.W);
-    
+
+    public static (int dr, int dc) Rot0(this (int dr, int dc) s) => (dr: s.dr, dc: s.dc);
+    public static (int dr, int dc) Rot90(this (int dr, int dc) s) => (dr: -s.dc, dc: s.dr);
+    public static (int dr, int dc) Rot180(this (int dr, int dc) s) => (dr: -s.dr, dc: -s.dc);
+    public static (int dr, int dc) Rot270(this (int dr, int dc) s) => (dr: s.dc, dc: -s.dr);
+
 
 }
 
 
 public static class Step
 {
-    public static (int r, int c) NW = (-1, -1);
-    public static (int r, int c) N =  (-1, 0);
-    public static (int r, int c) NE = (-1, 1);
-    public static (int r, int c) E =  (0, 1);
-    public static (int r, int c) SE = (1, 1);
-    public static (int r, int c) S =  (1, 0);
-    public static (int r, int c) SW = (1, -1);
-    public static (int r, int c) W=   (0, -1);
+    public static (int dr, int dc) NW = (-1, -1);
+    public static (int dr, int dc) N =  (-1, 0);
+    public static (int dr, int dc) NE = (-1, 1);
+    public static (int dr, int dc) E =  (0, 1);
+    public static (int dr, int dc) SE = (1, 1);
+    public static (int dr, int dc) S =  (1, 0);
+    public static (int dr, int dc) SW = (1, -1);
+    public static (int dr, int dc) W=   (0, -1);
 }
