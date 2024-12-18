@@ -37,7 +37,9 @@ public class Day16 : BaseDay<(CharImage2 map, Point start, Point end)>
 
             // Ignore if the inspected node has already been visited
             if (visited.ContainsKey((best.curr)))
+            {
                 continue;
+            }
 
             // Handle minimum item from priority queue
             costs[best] = cost;
@@ -87,6 +89,68 @@ public class Day16 : BaseDay<(CharImage2 map, Point start, Point end)>
 
     protected override object Solve2((CharImage2 map, Point start, Point end) input)
     {
-        throw new NotImplementedException();
+        Dictionary<(State, State), ulong> costs = new();
+        var pq = new PriorityQueue<(State curr, State prev), ulong>();
+        pq.Enqueue(((input.start, Step.E), (input.start, Step.E)), 0);
+        Dictionary<State, HashSet<State>> visited = new(); // <Point, Previous Point>
+
+        while (true)
+        {
+            // Stop if priority queue is empty
+            if (!pq.TryDequeue(out (State curr, State prev) best, out ulong cost))
+                break;
+
+            // Ignore if the inspected node has already been visited
+            if (visited.ContainsKey((best.curr)))
+            {
+                continue;
+            }
+
+            // Handle minimum item from priority queue
+            costs[best] = cost;
+            visited[best.curr] = [best.prev];
+
+
+            // Next possible actions according to puzzle:
+
+            // Walk one step in current direction
+            var step0 = best.curr.s.Rot0();
+            var p0 = best.curr.p.Add(step0);
+            if (input.map[p0] != '#' && InBounds(p0))
+                pq.Enqueue(((p0, step0), best.curr), cost + 1);
+
+            // Turn 90 deg
+            var step90 = best.curr.s.Rot90();
+            pq.Enqueue(((best.curr.p, step90), best.curr), cost + 1000);
+
+            // Turn 270 deg
+            var step270 = best.curr.s.Rot270();
+            pq.Enqueue(((best.curr.p, step270), best.curr), cost + 1000);
+        }
+
+
+            //HashSet<Point> uniqueLocations = [];
+            //Queue<State> queue = new();
+            //queue.Enqueue((input.end, (-1,0)));
+
+            //while (queue.Any())
+            //{
+            //    var state = queue.Dequeue();
+            //    uniqueLocations.Add(state.p);
+            //    foreach (var prevState in visited[state])
+            //    {
+            //        if (prevState != state)    // Skipp first visited point where the value and prev are equal
+            //            queue.Enqueue(prevState);
+            //    }
+            //}
+
+            //Console.WriteLine(uniqueLocations.Count);
+            //return cost;
+
+
+        bool InBounds(Point p) => p.r >= 0 && p.c >= 0 && p.r < input.map.ROWS && p.c < input.map.COLS;
+
+        throw new UnreachableException("Did not find end location.");
     }
+
 }
