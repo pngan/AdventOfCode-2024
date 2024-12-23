@@ -1,10 +1,7 @@
 ﻿using System.Collections.Immutable;
-using System.Numerics;
-using System.Reflection.PortableExecutable;
 using System.Text.RegularExpressions;
 
 using AdventOfCode.Solutions.Common;
-using AdventOfCode.Solutions.Extensions;
 
 using MoreLinq;
 

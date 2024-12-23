@@ -77,4 +77,13 @@ public static class EnumerableExtensions
             yield return matched.Groups.Values.Skip(1).Select(v => Convert.ToInt32(v.Value)).ToArray();
         }
     }
+    public static IEnumerable<ulong[]> GetLongsFromLine(this IEnumerable<string> input)
+    {
+        foreach (var line in input)
+        {
+            Regex rg = new(@"(\d+)");
+            var matched = rg.Match(line);
+            yield return matched.Groups.Values.Skip(1).Select(v => Convert.ToUInt64(v.Value)).ToArray();
+        }
+    }
 }
