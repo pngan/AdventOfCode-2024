@@ -2,6 +2,8 @@
 
 using AdventOfCode.Solutions.Common;
 
+using AdventureOfCode.Utilities.Image;
+
 namespace AdventOfCode.Solutions.Days;
 
 public class Day18 : BaseDay<IEnumerable<(int r, int c)>>
@@ -19,26 +21,18 @@ public class Day18 : BaseDay<IEnumerable<(int r, int c)>>
         }
     }
 
-    protected override object Solve1(IEnumerable<(int r, int c)> input)
-    {
-        return ShortestPath(input, takeN, end);
-    }
+    protected override object Solve1(IEnumerable<(int r, int c)> input) => ShortestPath(input, takeN);
 
     protected override object Solve2(IEnumerable<(int r, int c)> raw)
     {
         var input = raw.ToArray();
         for (var i = takeN; i < input.Count(); i++)
-        {
-            if (ShortestPath(input, i, end) is -1)
-            {
+            if (ShortestPath(input, i) is -1)
                 return input[i-1];
-            }
-        }
-
         return -123;
     }
 
-    private int ShortestPath(IEnumerable<(int r, int c)> input, int take, int end)
+    private int ShortestPath(IEnumerable<(int r, int c)> input, int take)
     {
         var visited = input.Take(take).ToHashSet(); // Treat bad bytes as visited
         var pend = (r: end, c: end);
@@ -52,9 +46,8 @@ public class Day18 : BaseDay<IEnumerable<(int r, int c)>>
             var (p, cost) = q.Dequeue();
             if (p == pend)
                 return cost;
-            foreach (var d in new[] { (0, 1), (1, 0), (0, -1), (-1, 0) })
+            foreach (var np in p.Neighbours4())
             {
-                var np = (r: p.r + d.Item1, c: p.c + d.Item2);
                 if (np.r < 0 || np.r > end || np.c < 0 || np.c > end || visited.Contains(np))
                     continue;
                 q.Enqueue((np, cost + 1));
