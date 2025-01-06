@@ -1,42 +1,35 @@
 ﻿namespace AdventureOfCode.Utilities.Image;
 
-using System.Net.NetworkInformation;
-
-using Point2 = (int r, int c);
+using System.Numerics;
 
 public static class PointExtensions
 {
-    public static (long r, long c) Add(this (long r, long c) orig, (long r, long c) addend)
-    {
-        return (orig.r+addend.r, orig.c+addend.c);
-    }
+    public static IEnumerable<(T r, T c)> Neighbours8<T>(this (T r, T c) p) where T : INumber<T>
+        =>
+        [
+            (p.r-T.One, p.c-T.One), // nw
+            (p.r-T.One, p.c), // n
+            (p.r-T.One, p.c+T.One), // ne
+            (p.r, p.c+T.One), // e
+            (p.r+T.One, p.c+T.One), // se
+            (p.r+T.One, p.c), // s
+            (p.r+T.One, p.c-T.One), // sw
+            (p.r, p.c-T.One), // w
+        ];
+    public static IEnumerable<(T r, T c)> Neighbours4<T>(this (T r, T c) p) where T : INumber<T>
+        =>
+        [
+            (p.r-T.One, p.c), // n
+            (p.r, p.c+T.One), // e
+            (p.r+T.One, p.c), // s
+            (p.r, p.c-T.One), // w
+        ];
 
-    public static IEnumerable<(int r, int c)> Neighbours8( this (int r, int c) p)
-    {
-        return [
-            (p.r-1, p.c-1), // nw
-            (p.r-1, p.c), // n
-            (p.r-1, p.c+1), // ne
-            (p.r, p.c+1), // e
-            (p.r+1, p.c+1), // se
-            (p.r+1, p.c), // s
-            (p.r+1, p.c-1), // sw
-            (p.r, p.c-1), // w
-            ];
-    }
-    public static IEnumerable<Point2> Neighbours4(this (int r, int c) p)
-    {
-        return [
-            (p.r-1, p.c), // n
-            (p.r, p.c+1), // e
-            (p.r+1, p.c), // s
-            (p.r, p.c-1), // w
-            ];
-    }
 
-    public static (int r, int c) Add(this (int r, int c) p, (int dr, int dc) s) => (r: p.r + s.dr, c: p.c + s.dc);
-    public static (int r, int c) Subtract(this (int r, int c) p, (int dr, int dc) s) => (r: p.r - s.dr, c: p.c - s.dc);
-    public static (int r, int c) Negate(this (int r, int c) p) => (r: -p.r, c: -p.c);
+    public static (T r, T c) Add<T>(this (T r, T c) x, (T r, T c) y) where T : INumber<T> => (x.r + y.r, x.c + y.c);
+    public static (T r, T c) Subtract<T>(this (T r, T c) x, (T r, T c) y) where T : INumber<T> => (x.r - y.r, x.c - y.c);
+    public static (T r, T c) Negate<T>(this (T r, T c) x) where T : INumber<T> => (-x.r, -x.c);
+
     public static (int r, int c) StepNW(this (int r, int c) p) => p.Add(Step.NW);
     public static (int r, int c) StepN(this (int r, int c) p) => p.Add(Step.N);
     public static (int r, int c) StepNE(this (int r, int c) p) => p.Add(Step.NE);
@@ -51,7 +44,9 @@ public static class PointExtensions
     public static (int dr, int dc) Rot180(this (int dr, int dc) s) => (dr: -s.dr, dc: -s.dc);
     public static (int dr, int dc) Rot270(this (int dr, int dc) s) => (dr: s.dc, dc: -s.dr);
 
+    public static T ManhattanDistance<T>((T r, T c) a, (T r, T c) b) where T : INumber<T> => Abs<T>(a.r - b.r) + Abs<T>(a.c - b.c);
 
+    public static T Abs<T>(this T value) where T : INumber<T> => T.Abs(value);
 }
 
 

@@ -3,9 +3,13 @@ using System.Text.RegularExpressions;
 
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
+using MoreLinq.Extensions;
+
 namespace AdventOfCode.Solutions.Extensions;
+
 public static class EnumerableExtensions
 {
+
     public static List<List<T>> Split<T>(this IEnumerable<T> input, Func<T, bool> splitOn)
     {
         var result = new List<List<T>> { new() };

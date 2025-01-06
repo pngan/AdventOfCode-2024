@@ -1,7 +1,7 @@
 ﻿using System.Collections.Immutable;
 
 using AdventOfCode.Solutions.Common;
-using AdventOfCode.Solutions.Extensions;
+using AdventureOfCode.Utilities.Image;
 
 namespace AdventOfCode.Solutions.Days;
 using Map = HashSet<(long r, long c)>;
