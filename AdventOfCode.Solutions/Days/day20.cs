@@ -2,6 +2,7 @@
 
 using AdventureOfCode.Utilities.Image;
 
+using System;
 using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 
@@ -80,30 +81,24 @@ public class Day20 : BaseDay<(Collection<(int r, int c)> path, Dictionary<(int r
 
     protected override object Solve2((Collection<(int r, int c)> path, Dictionary<(int r, int c), int> pivotPath, (int r, int c) start, (int r, int c) end) input)
     {
+        return EvaluateCheats(input.path, 20);
+    }
+
+    private int EvaluateCheats(Collection<(int r, int c)> path, int maxCheatLength)
+    {
         // for every point b on path
         //   for every other point e on path
         //     if dist(b,e) <= 20
         //       index(e) - index(b) - dist(b,e)   where dist = Manhattan distance
-        Dictionary<int, int> cheats = new(); // picosecond, count
-
-        foreach (var b in input.path)
-        {
-            int indexb = input.pivotPath[b];
-            foreach (var e in input.path)
+        int numCheats = 0;
+        for (int b = 0; b < path.Count; b++)
+            for (int e = b + 1; e < path.Count; e++)
             {
-                int indexe = input.pivotPath[e];
-                var dist = PointExtensions.ManhattanDistance(b, e);
+                var dist = PointExtensions.ManhattanDistance(path[b], path[e]);
                 if (dist > 20) continue;
-                int gain = indexe - indexb - dist;
-                if (gain <= 0) continue;
-
-                if (cheats.ContainsKey(gain))
-                    cheats[gain]++;
-                else
-                    cheats[gain] = 1;
+                int gain = e - b - dist;
+                if (gain >= 100) numCheats++;
             }
-        }
-
-        return cheats.Where(x => x.Key >= 100).Sum(x => x.Value);
+        return numCheats;
     }
 }
