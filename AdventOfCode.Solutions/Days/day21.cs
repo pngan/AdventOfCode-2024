@@ -16,6 +16,23 @@ public class Day21 : BaseDay<IEnumerable<string>>
 
     protected override IEnumerable<string> Parse(ImmutableArray<string> input) => input;
 
+    // This table encodes the following rules:
+    // 1. If a sequence contains a <, then do it first because this will lead to a double << at the next level instead of a separated <. While a < is
+    // expensive because it is far from A, a double << can be performed with additional cost of 1 (AA vs A). While a split < will require the expensive cost to 
+    // be costed twice.
+    // E.g. see the dictionary entry {">^", "<^"},
+    // Demonstration:
+    // Cheap:     <^A (3) -> v<<A>^A>A (9) -> <vA<AA>>^A vA<^A>A vA^A (21)
+    // Expensive: ^<A (3) -> <Av<A>>^A (9) -> v<<A>>^A <vA<A>>^A vAA<^A>A (25)
+    // 2. If a sequence contains a v , then do it first, because again it will lead to a double << at the next level instead of a separated <. 
+    // E.g. see the dictionary entry {"^<", "v<"}
+    // Demonstration:
+    // Cheap: v>A (3) -> <vA>A^A (7) -> v<<A>A^>AvA^A<A>A (17)
+    // Expensive: >vA (3) -> vA<A>^A (7) -> <vA^> Av<<A>>^AvA<^A> A (21)
+    // 3. Rules 1 and 2 have exceptions where the sequence would run over an empty space.
+    // E.g. see the dictionary entry {"A<", "v<<"} (cannot following rule 1)
+    // 
+    // Because of all these bespoke cases, the rules were hard coded in a dictionary rather than trying to find a general solution.
     Dictionary<string, string> moves = new() {
         {"AA", ""},
         {"<<", ""},
@@ -154,100 +171,34 @@ public class Day21 : BaseDay<IEnumerable<string>>
         {"98", "<"}
     };
 
-    Dictionary<string, List<string>> memo = new();
+    Dictionary<(string, int), long> _memo = new();
 
+    protected override object Solve1(IEnumerable<string> input) => Solve(input, 3);
 
+    protected override object Solve2(IEnumerable<string> input) => Solve(input, 26);
 
-    // 94284 correct part 1
-    protected override object Solve1(IEnumerable<string> input)
+    long Solve(IEnumerable<string> input, int numberRobots)
     {
         long result = 0;
         foreach (var line in input)
         {
             var numericValue = long.Parse(line[..^1]);
-            long len = NestRobot2(line, 3);
+            long len = NestRobot(line, numberRobots);
             result += len * numericValue;
-
-            Console.Write($"{line},{numericValue}");
-            Console.Write(" ");
-            Console.WriteLine(len);
         }
 
         return result;
     }
 
-    protected override object Solve2(IEnumerable<string> input)
+    private long NestRobot(string input, int depth)
     {
-        long result = 0;
-        foreach (var line in input)
-        {
-            var numericValue = long.Parse(line[..^1]);
-            long len = NestRobot2(line, 26);
-            result += len * numericValue;
+        if (_memo.TryGetValue((input,depth), out long length)) // Short circuit calc using memoization
+            return length;
 
-            Console.Write($"{line},{numericValue}");
-            Console.Write(" ");
-            Console.WriteLine(len);
-        }
-
-        return result;
-    }
-
-    string NestRobot(string input, int depth)
-    {
-        Console.WriteLine($"Depth={depth}");
-        StringBuilder result = new();
-        for (var i = 0; i < input.Length - 1; i++)
-        {
-            var key = input[i..(i + 2)];
-            if (moves.ContainsKey(key))
-            {
-                result.Append(moves[key]);
-            }
-
-            result.Append("A");
-        }
-        return (depth == 1) ? result.ToString() : NestRobot("A"+result.ToString(), depth-1);
-    }
-
-    //void NestRobot3(string input, int depth)
-    //{
-    //    if (depth == 0)
-    //    {
-    //        return;// (long)input.Length;
-    //    }
-
-    //    Console.WriteLine($"Depth={depth}, {input}");
-    //    List<string> parts = new();
-
-    //    string input2 = "A" + input;
-        
-    //    for (var i = 0; i < input2.Length - 1; i++)
-    //    {
-    //        var key = input2[i..(i + 2)];
-    //        if (moves.ContainsKey(key))
-    //        {
-    //            parts.Add(StringCache.Intern( moves[key]+"A"));// Intern string to save memory on duplicated strings
-    //        }
-
-    //    }
-
-    //    memo[input] = parts;
-
-    //    return memo[input].Sum(x => NestRobot2(x, depth - 1));
-    //}
-
-
-    long NestRobot2(string input, int depth)
-    {
-        if (depth == 22)
-            Console.WriteLine($"Depth={depth}");
-        if (depth == 0)
-        {
+        if (depth == 0) // Terminate recursion when depth is 0
             return (long)input.Length;
-        }
 
-        string input2 = "A" + input;
+        string input2 = "A" + input; // Each input has implied start position of "A"
 
         long len = 0;
         for (var i = 0; i < input2.Length - 1; i++)
@@ -255,9 +206,10 @@ public class Day21 : BaseDay<IEnumerable<string>>
             var key = input2[i..(i + 2)];
             if (moves.ContainsKey(key))
             {
-                len += NestRobot2(moves[key] + "A", depth - 1);
+                len += NestRobot(moves[key] + "A", depth - 1); // Recurse with new input and depth. Each command is activated by "A"
             }
         }
+        _memo[(input, depth)] = len; // Record calculated length in memoization
         return len;
     }
 }   
