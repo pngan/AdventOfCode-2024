@@ -1,7 +1,12 @@
-﻿using System.Collections.Immutable;
+﻿using System.Collections.Concurrent;
+using System.Collections.Immutable;
 using System.Text;
 
 using AdventOfCode.Solutions.Common;
+
+using Microsoft.Diagnostics.Tracing.Parsers.MicrosoftWindowsTCPIP;
+
+using MoreLinq;
 
 namespace AdventOfCode.Solutions.Days;
 
@@ -12,6 +17,11 @@ public class Day21 : BaseDay<IEnumerable<string>>
     protected override IEnumerable<string> Parse(ImmutableArray<string> input) => input;
 
     Dictionary<string, string> moves = new() {
+        {"AA", ""},
+        {"<<", ""},
+        {"^^", ""},
+        {"vv", ""},
+        {">>", ""},
         {"A^", "<"},
         {"A<", "v<<"},
         {"Av", "<v"},
@@ -144,20 +154,23 @@ public class Day21 : BaseDay<IEnumerable<string>>
         {"98", "<"}
     };
 
+    Dictionary<string, List<string>> memo = new();
+
+
+
     // 94284 correct part 1
     protected override object Solve1(IEnumerable<string> input)
     {
         long result = 0;
-        foreach (var line in input.Select(x=>'A'+x))
+        foreach (var line in input)
         {
-            var numericValue = long.Parse(line[1..^1]);
-            var code = NestRobot(line, 3);
-            result += code.Length * numericValue;
+            var numericValue = long.Parse(line[..^1]);
+            long len = NestRobot2(line, 3);
+            result += len * numericValue;
 
-            Console.Write($"{line},{ numericValue}");
+            Console.Write($"{line},{numericValue}");
             Console.Write(" ");
-            Console.Write(code);
-            Console.WriteLine();
+            Console.WriteLine(len);
         }
 
         return result;
@@ -165,11 +178,24 @@ public class Day21 : BaseDay<IEnumerable<string>>
 
     protected override object Solve2(IEnumerable<string> input)
     {
-        throw new NotImplementedException();
+        long result = 0;
+        foreach (var line in input)
+        {
+            var numericValue = long.Parse(line[..^1]);
+            long len = NestRobot2(line, 3);
+            result += len * numericValue;
+
+            Console.Write($"{line},{numericValue}");
+            Console.Write(" ");
+            Console.WriteLine(len);
+        }
+
+        return result;
     }
 
     string NestRobot(string input, int depth)
     {
+        Console.WriteLine($"Depth={depth}");
         StringBuilder result = new();
         for (var i = 0; i < input.Length - 1; i++)
         {
@@ -183,4 +209,64 @@ public class Day21 : BaseDay<IEnumerable<string>>
         }
         return (depth == 1) ? result.ToString() : NestRobot("A"+result.ToString(), depth-1);
     }
+
+    //void NestRobot3(string input, int depth)
+    //{
+    //    if (depth == 0)
+    //    {
+    //        return;// (long)input.Length;
+    //    }
+
+    //    Console.WriteLine($"Depth={depth}, {input}");
+    //    List<string> parts = new();
+
+    //    string input2 = "A" + input;
+        
+    //    for (var i = 0; i < input2.Length - 1; i++)
+    //    {
+    //        var key = input2[i..(i + 2)];
+    //        if (moves.ContainsKey(key))
+    //        {
+    //            parts.Add(StringCache.Intern( moves[key]+"A"));// Intern string to save memory on duplicated strings
+    //        }
+
+    //    }
+
+    //    memo[input] = parts;
+
+    //    return memo[input].Sum(x => NestRobot2(x, depth - 1));
+    //}
+
+
+    long NestRobot2(string input, int depth)
+    {
+        if (depth == 0)
+        {
+            Console.Write(input);
+            return (long)input.Length;
+        }
+
+        string input2 = "A" + input;
+
+        long len = 0;
+        for (var i = 0; i < input2.Length - 1; i++)
+        {
+            var key = input2[i..(i + 2)];
+            if (moves.ContainsKey(key))
+            {
+                len += NestRobot2(moves[key] + "A", depth - 1);
+            }
+        }
+        return len;
+    }
+}   
+
+public static class StringCache
+{
+    private static ConcurrentDictionary<string, string> cache = new(StringComparer.Ordinal);
+
+    public static IEnumerable<string> Intern(IEnumerable<string> strs) => strs.Select(x => cache.GetOrAdd(x, x));
+    public static string Intern(string str) => cache.GetOrAdd(str, str);
+
+    public static void Clear() => cache.Clear();
 }
