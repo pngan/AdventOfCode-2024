@@ -182,7 +182,7 @@ public class Day21 : BaseDay<IEnumerable<string>>
         foreach (var line in input)
         {
             var numericValue = long.Parse(line[..^1]);
-            long len = NestRobot2(line, 3);
+            long len = NestRobot2(line, 26);
             result += len * numericValue;
 
             Console.Write($"{line},{numericValue}");
@@ -240,9 +240,10 @@ public class Day21 : BaseDay<IEnumerable<string>>
 
     long NestRobot2(string input, int depth)
     {
+        if (depth == 22)
+            Console.WriteLine($"Depth={depth}");
         if (depth == 0)
         {
-            Console.Write(input);
             return (long)input.Length;
         }
 
