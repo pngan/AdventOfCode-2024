@@ -1,12 +1,6 @@
-﻿using System.Collections.Concurrent;
-using System.Collections.Immutable;
-using System.Text;
+﻿using System.Collections.Immutable;
 
 using AdventOfCode.Solutions.Common;
-
-using Microsoft.Diagnostics.Tracing.Parsers.MicrosoftWindowsTCPIP;
-
-using MoreLinq;
 
 namespace AdventOfCode.Solutions.Days;
 
@@ -212,14 +206,4 @@ public class Day21 : BaseDay<IEnumerable<string>>
         _memo[(input, depth)] = len; // Record calculated length in memoization
         return len;
     }
-}   
-
-public static class StringCache
-{
-    private static ConcurrentDictionary<string, string> cache = new(StringComparer.Ordinal);
-
-    public static IEnumerable<string> Intern(IEnumerable<string> strs) => strs.Select(x => cache.GetOrAdd(x, x));
-    public static string Intern(string str) => cache.GetOrAdd(str, str);
-
-    public static void Clear() => cache.Clear();
 }
