@@ -1,8 +1,13 @@
 ﻿using System.Collections.Immutable;
+using System.Drawing;
+using System.Text;
 
 using AdventOfCode.Solutions.Common;
 using AdventOfCode.Solutions.Extensions;
 using MoreLinq;
+
+using static System.Net.Mime.MediaTypeNames;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 
 namespace AdventOfCode.Solutions.Days;
@@ -62,8 +67,96 @@ public class Day24 : BaseDay<(Dictionary<string, bool>, Gate[])>
         return output.Select((v,i) => v << i).Sum(x => x);
     }
 
+    // Render circuit as graph and visual find incorrect wiring
+    // Creates a file in "My Documents" called Aoc-2024Day24.dot
+    // Render contents at https://dreampuf.github.io
     protected override object Solve2((Dictionary<string, bool>, Gate[]) input)
     {
-        throw new NotImplementedException();
+        StringBuilder sb = new();
+        // Output dot file
+        sb.AppendLine("digraph G {");
+        OutputInputsX(input.Item1.Keys, sb);
+        OutputInputsY(input.Item1.Keys, sb);
+        OutputOutputs(input.Item2, sb);
+        OutputAndGates(input.Item2, sb);
+        OutputOrGates(input.Item2, sb);
+        OutputXorGates(input.Item2, sb);
+        OutputCircuit(input.Item2, sb);
+
+
+        sb.AppendLine("}");
+
+        string docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+        File.WriteAllText(Path.Combine(docPath, "Aoc-2024Day24.dot"), sb.ToString());
+        return -123;
+    }
+
+    void OutputCircuit(Gate[] gates, StringBuilder sb)
+    {
+        foreach (var gate in gates)
+            sb.AppendLine($"{gate.In1} -> {gate.Output}; {gate.In2} -> {gate.Output}");
+    }
+    void OutputAndGates(Gate[] gates, StringBuilder sb)
+    {
+        sb.AppendLine("  subgraph gates_and {\r\n    node [style=filled,color=lightgreen];");
+        foreach (var gate in gates.Where(g => g.Op == "AND"))
+            sb.Append($"{gate.Output}; ");
+        sb.AppendLine("\r\n  }");
+    }
+    void OutputOrGates(Gate[] gates, StringBuilder sb)
+    {
+        sb.AppendLine("  subgraph gates_or {\r\n    node[style = filled, color = yellow];");
+        foreach (var gate in gates.Where(g => g.Op == "OR"))
+            sb.Append($"{gate.Output}; ");
+        sb.AppendLine("\r\n  }");
+    }
+    void OutputXorGates(Gate[] gates, StringBuilder sb)
+    {
+        sb.AppendLine("  subgraph gates_xor {\r\n    node[style = filled, color = lightskyblue];");
+        foreach (var gate in gates.Where(g => g.Op == "XOR"))
+            sb.Append($"{gate.Output}; ");
+        sb.AppendLine("\r\n  }");
+    }
+
+    void OutputInputsX(IEnumerable<string> wires, StringBuilder sb)
+    {
+        sb.AppendLine("  subgraph input_x {\r\n    node [style=filled,color=white];");
+        bool isFirst = true;
+        foreach (var input in wires.Where(x => x.StartsWith("x")))
+        {
+            if (!isFirst)
+                sb.Append($" ->");
+            isFirst = false;
+            sb.Append($"{input}");
+        }
+        sb.AppendLine(";\r\n  }");
+    }
+
+    void OutputInputsY(IEnumerable<string> wires, StringBuilder sb)
+    {
+        sb.AppendLine("  subgraph input_y {\r\n    node [style=filled,color=white];");
+        bool isFirst = true;
+        foreach (var input in wires.Where(x => x.StartsWith("y")))
+        {
+            if (!isFirst)
+                sb.Append($" ->");
+            isFirst = false;
+            sb.Append($"{input}");
+        }
+        sb.AppendLine(";\r\n  }");
+    }
+    void OutputOutputs(Gate[] gates, StringBuilder sb)
+    {
+        sb.AppendLine("  subgraph output_z {");
+        bool isFirst = true;
+        foreach (var z in gates.Select(x => x.Output).Where(g => g.StartsWith("z")).Order())
+        {
+            if (!isFirst)
+                sb.Append($" ->");
+            isFirst = false;
+            sb.Append($"{z}");
+        }
+
+        sb.AppendLine(";\r\n  }");
     }
 }
