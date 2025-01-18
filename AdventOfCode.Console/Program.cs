@@ -1,8 +1,8 @@
 ﻿using AdventOfCode.Solutions.Days;
 
-var day = new Day23();
+var day = new Day24();
 Console.WriteLine(day.Solve1());
-Console.WriteLine(day.Solve2());
+//Console.WriteLine(day.Solve2());
 
 /**** HINTS ****
 data.Select(v => Convert.ToInt32(v)) // Convert to int
