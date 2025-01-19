@@ -1,13 +1,10 @@
 ﻿using System.Collections.Immutable;
-using System.Drawing;
 using System.Text;
 
 using AdventOfCode.Solutions.Common;
 using AdventOfCode.Solutions.Extensions;
-using MoreLinq;
 
-using static System.Net.Mime.MediaTypeNames;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using MoreLinq;
 
 
 namespace AdventOfCode.Solutions.Days;
@@ -25,8 +22,6 @@ public class Day24 : BaseDay<(Dictionary<string, bool>, Gate[])>
             p1.Select(_ => _.Split(": ")).ToDictionary(_ => _[0], _ => _[1] is "1"),
             p2.Select(_ => _.Split(' ').Fold((a, b, c, _, d) => new Gate(a, c, b, d))).ToArray()
         ));
-
-    // ans 50411513338638
 
     protected override object Solve1((Dictionary<string, bool>, Gate[]) input)
     {
@@ -67,9 +62,17 @@ public class Day24 : BaseDay<(Dictionary<string, bool>, Gate[])>
         return output.Select((v,i) => v << i).Sum(x => x);
     }
 
-    // Render circuit as graph and visual find incorrect wiring
-    // Creates a file in "My Documents" called Aoc-2024Day24.dot
-    // Render contents at https://dreampuf.github.io
+
+    // The return statement in this function was hand crafted after visually inspecting the 
+    // circuit which was rendered using https://dreampuf.github.io/GraphvizOnline/?engine=dot
+    // This function created a dot file located in "My Documents\Aoc-2024Day24.dot"
+    // The puzzle input implements a full adder for two binary numbers as described in this wiki 
+    // article https://en.wikipedia.org/wiki/Adder_(electronics)
+    // 
+    // The wiring in the circuit has 4 faults, which can be remedied by swapping four pairs of 
+    // wiring connections. A visual inspection will readily reveal a break in the pattern.
+    //
+    // Click this image to see the rendered result: "AOC2024-day24-part2.png"
     protected override object Solve2((Dictionary<string, bool>, Gate[]) input)
     {
         StringBuilder sb = new();
@@ -82,13 +85,12 @@ public class Day24 : BaseDay<(Dictionary<string, bool>, Gate[])>
         OutputOrGates(input.Item2, sb);
         OutputXorGates(input.Item2, sb);
         OutputCircuit(input.Item2, sb);
-
-
         sb.AppendLine("}");
 
         string docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
         File.WriteAllText(Path.Combine(docPath, "Aoc-2024Day24.dot"), sb.ToString());
-        return -123;
+
+        return string.Join(",", "vwr,z06,z16,kfs,hcm,gfv,tqm,z11".Split(',').Order());
     }
 
     void OutputCircuit(Gate[] gates, StringBuilder sb)
