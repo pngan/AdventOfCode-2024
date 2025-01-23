@@ -6,7 +6,6 @@ using AdventOfCode.Solutions.Extensions;
 
 using MoreLinq;
 
-
 namespace AdventOfCode.Solutions.Days;
 
 
@@ -62,6 +61,8 @@ public class Day24 : BaseDay<(Dictionary<string, bool>, Gate[])>
         return output.Select((v,i) => v << i).Sum(x => x);
     }
 
+
+    // This function does not compute the result! It outputs a dot file which can be rendered using Graphviz.
 
     // The return statement in this function was hand crafted after visually inspecting the 
     // circuit which was rendered using https://dreampuf.github.io/GraphvizOnline/?engine=dot
