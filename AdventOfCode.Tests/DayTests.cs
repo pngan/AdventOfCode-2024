@@ -14,6 +14,7 @@ public class DayTests
     [TestCase(typeof(Day07), "303766880536", "337041851384440")]
     [TestCase(typeof(Day08), "247", "861")]
     [TestCase(typeof(Day09), "6384282079460", "6408966547049")]
+    [TestCase(typeof(Day10), "733", "1514")]
     [TestCase(typeof(Day11), "203228", "240884656550923")]
     [TestCase(typeof(Day12), "1363484", "838988")]
     [TestCase(typeof(Day13), "29023", "96787395375634")]

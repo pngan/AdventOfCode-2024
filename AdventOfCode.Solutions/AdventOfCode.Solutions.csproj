@@ -23,10 +23,4 @@
       <ProjectReference Include="..\AdventureOfCode.Utilities\AdventureOfCode.Utilities.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <None Update="Inputs\2024_24_input - Copy.txt">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-    </ItemGroup>
-
 </Project>
