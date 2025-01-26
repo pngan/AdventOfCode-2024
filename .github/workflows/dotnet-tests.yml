@@ -26,7 +26,7 @@ jobs:
           Push-Location AdventOfCode.Solutions\Inputs
           
           # Extract the 7z archive
-          7z x .\Input.7z -phello
+          7z x .\Input.7z -p"hello"
           
           # Return to the original directory
           Pop-Location
