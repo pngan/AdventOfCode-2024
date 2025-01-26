@@ -13,4 +13,4 @@ Thumbs.db
 Desktop.ini
 .DS_Store
 
-Inputs/
+*input.txt

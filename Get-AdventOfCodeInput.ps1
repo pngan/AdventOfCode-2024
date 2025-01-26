@@ -4,6 +4,9 @@
         [Parameter(Position=0, Mandatory = $true, HelpMessage = 'Get cookie https://github.com/GreenLightning/advent-of-code-downloader?tab=readme-ov-file#how-do-i-get-my-session-cookie')]
         [string]$Cookie,
         
+		[Parameter(Mandatory = $true, HelpMessage = 'Password to protect input file')]
+        [string]$Password,
+		
         [ValidateRange(2015, 2024)]
         [Parameter(Mandatory=$true)]
         [int]$Year,
@@ -28,7 +31,24 @@
     } catch {
         Write-Output "Error: Failed to download input data. Please check your session cookie and ensure you have access to the Advent of Code website."
     }
+	
+	$7zipPath = "$env:ProgramData\chocolatey\bin\7z.exe"
 
+	if (-not (Test-Path -Path $7zipPath -PathType Leaf)) {
+		throw "7 zip executable '$7zipPath' not found"
+	}
+
+	Set-Alias Start-SevenZip $7zipPath
+
+	$Source = "*.txt "
+	$Target = ".\Input.7z"
+    Push-Location AdventOfCode.Solutions\Inputs 
+	Start-SevenZip a -mx=9 $Target $Source -p$Password
+	Pop-Location
+
+	
+#7z a Input3 *.txt -phello
+#  7z x .\Input2.7z -phello
 
 # Example usage:
 # Get-AdventOfCodeInput -Year 2023 -Day 1 -Cookie <cookie> 
