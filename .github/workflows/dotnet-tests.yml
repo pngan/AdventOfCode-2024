@@ -31,12 +31,12 @@ jobs:
           set ORIGINAL_DIR=%CD%
           
           # Navigate to the target directory
-          cd AdventOfCode.Solutions\Inputs
+          Push-Location AdventOfCode.Solutions\Inputs
           
           # Extract the 7z archive
           7z x .\Input.7z -p"%ARCHIVE_PASSWORD%" 
           
           # Return to the original directory
-          cd %ORIGINAL_DIR%
+          Pop-Location
       - name: Run Unit Tests
         run: dotnet test --no-build --verbosity normal
