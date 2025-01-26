@@ -14,7 +14,7 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 ```
 An example to get the input files for Year 2024 and Day 1 is:
 ```powershell
- .\Get-AdventOfCodeInput.ps1 -Password <password> -Cookie <cookie>  -Year 2024 -Day 25 
+ .\Get-AdventOfCodeInput.ps1 -Password <password> -Cookie <cookie>  -Year 2024 -Day 1
 ```
  - The cookie required by this script can be obtained [as follows](https://github.com/GreenLightning/advent-of-code-downloader?tab=readme-ov-file#how-do-i-get-my-session-cookie)
  - The password is contained in my Password manager, but should also be set as a GitHub Action secret named `ARCHIVEPASSWORD`
