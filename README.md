@@ -1,4 +1,5 @@
 # AdventOfCode
+![Advent of Code Tests](https://github.com/pngan/AdventOfCode-2024/actions/workflows/dotnet-tests.yml/badge.svg)
 
 C# solutions to the [Advent Of Code 2024](https://adventofcode.com/) Puzzles.
 
