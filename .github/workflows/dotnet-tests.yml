@@ -21,7 +21,22 @@ jobs:
           dotnet-version: 9.0.x
       - name: Restore dependencies
         run: dotnet restore
-      - name: Build
+      - name: Build Excutable
         run: dotnet build --no-restore
-      - name: Test
+      - name: Extract Input from 7z Archive
+        env:
+          ARCHIVE_PASSWORD: ${{ secrets.ARCHIVEPASSWORD }}
+        run: |
+          # Save the current directory
+          set ORIGINAL_DIR=%CD%
+          
+          # Navigate to the target directory
+          cd AdventOfCode.Solutions\Inputs
+          
+          # Extract the 7z archive
+          7z x .\Input.7z -p"%ARCHIVE_PASSWORD%" 
+          
+          # Return to the original directory
+          cd %ORIGINAL_DIR%
+      - name: Run Unit Tests
         run: dotnet test --no-build --verbosity normal
