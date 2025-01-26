@@ -43,10 +43,9 @@
 	$Source = "*.txt"
 	$Target = ".\Input.7z"
     Push-Location AdventOfCode.Solutions\Inputs
-	Write-Output $Password
-	Start-SevenZip a $Target $Source -p$Password
+	Start-SevenZip a $Target $Source -p"${Password}"
 	Pop-Location
 	
 # Example usage:
-# Get-AdventOfCodeInput -Year 2023 -Day 1 -Cookie <cookie> 
+# Get-AdventOfCodeInput -Password hellothere -Cookie <cookie> -Year 2023 -Day 1 
 
