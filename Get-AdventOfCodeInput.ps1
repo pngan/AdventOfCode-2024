@@ -43,8 +43,7 @@
 	$Source = "*.txt"
 	$Target = ".\Input.7z"
     Push-Location AdventOfCode.Solutions\Inputs
-	$pass = $Password.Trim()
-	Start-SevenZip a $Target $Source -p$pass
+	Start-SevenZip a $Target $Source -p$Password
 	Pop-Location
 	
 # Example usage:
