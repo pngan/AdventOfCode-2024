@@ -27,10 +27,10 @@ jobs:
           
           # Extract the 7z archive
           $secretValue = $env:ARCHIVE_PASSWORD
-          Write-Output $secretValue
+          Write-Output "$secretValue"
           Write-Output "%ARCHIVE_PASSWORD%"
           Write-Output ${{ secrets.ARCHIVEPASSWORD }}
-          7z x .\Input.7z -p$secretValue
+          7z x .\Input.7z -p"$secretValue"
           
           # Return to the original directory
           Pop-Location
