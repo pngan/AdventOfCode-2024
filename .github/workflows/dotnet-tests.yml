@@ -15,14 +15,6 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4.2.2
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4.1.0
-        with:
-          dotnet-version: 9.0.x
-      - name: Restore dependencies
-        run: dotnet restore
-      - name: Build Excutable
-        run: dotnet build --no-restore
       - name: Extract Input from 7z Archive
         env:
           ARCHIVE_PASSWORD: ${{ secrets.ARCHIVEPASSWORD }}
@@ -34,9 +26,17 @@ jobs:
           Push-Location AdventOfCode.Solutions\Inputs
           
           # Extract the 7z archive
-          7z x .\Input.7z -p"%ARCHIVE_PASSWORD%" 
+          7z x .\Input.7z -p%ARCHIVE_PASSWORD%
           
           # Return to the original directory
           Pop-Location
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4.1.0
+        with:
+          dotnet-version: 9.0.x
+      - name: Restore dependencies
+        run: dotnet restore
+      - name: Build Excutable
+        run: dotnet build --no-restore
       - name: Run Unit Tests
         run: dotnet test --no-build --verbosity normal
