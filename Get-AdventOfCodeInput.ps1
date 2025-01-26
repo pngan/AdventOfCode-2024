@@ -40,16 +40,12 @@
 
 	Set-Alias Start-SevenZip $7zipPath
 
-	$Source = "*.txt "
+	$Source = "*.txt"
 	$Target = ".\Input.7z"
-    Push-Location AdventOfCode.Solutions\Inputs 
+    Push-Location AdventOfCode.Solutions\Inputs
 	Start-SevenZip a -mx=9 $Target $Source -p$Password
 	Pop-Location
-
 	
-#7z a Input3 *.txt -phello
-#  7z x .\Input2.7z -phello
-
 # Example usage:
 # Get-AdventOfCodeInput -Year 2023 -Day 1 -Cookie <cookie> 
 
