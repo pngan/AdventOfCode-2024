@@ -26,6 +26,9 @@ jobs:
           Push-Location AdventOfCode.Solutions\Inputs
           
           # Extract the 7z archive
+          Write-Output %ARCHIVE_PASSWORD%
+          Write-Output "%ARCHIVE_PASSWORD%"
+          Write-Output ${{ secrets.ARCHIVEPASSWORD }}
           7z x .\Input.7z -p"%ARCHIVE_PASSWORD%"
           
           # Return to the original directory
