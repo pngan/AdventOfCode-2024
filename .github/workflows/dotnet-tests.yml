@@ -26,7 +26,8 @@ jobs:
           Push-Location AdventOfCode.Solutions\Inputs
           
           # Extract the 7z archive
-          7z x .\Input.7z -p"hello"
+          $secretValue = $env:ARCHIVE_PASSWORD
+          7z x .\Input.7z -p"$secretValue"
           
           # Return to the original directory
           Pop-Location
